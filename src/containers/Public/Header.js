@@ -1,38 +1,65 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import logo from "../../assets/logobg.png";
 import { Button } from "../../components";
 import icons from "../../ultils/icon";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { path } from "../../ultils/constant";
+import { useDispatch, useSelector } from "react-redux";
+import * as actions from "../../store/actions";
 const { AiOutlinePlusCircle } = icons;
 
 const Header = () => {
   const navigate = useNavigate();
-  const goLogin = useCallback(() => {
-    navigate(path.LOGIN);
+  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const headerRef = useRef();
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const goLogin = useCallback((flag) => {
+    navigate(path.LOGIN, { state: { flag } });
   }, []);
+
+  useEffect(() => {
+    headerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [searchParams.get("page")]);
   return (
-    <div className="w-1100">
+    <div ref={headerRef} className="w-3/5">
       <div className="w-full flex items-center justify-between">
-        <img
-          src={logo}
-          alt="logo"
-          className="w-[240px] h-[70px] object-contain"
-        />
+        <Link to={"/"}>
+          <img
+            src={logo}
+            alt="logo"
+            className="w-[240px] h-[70px] object-contain"
+          />
+        </Link>
         <div className="flex items-center gap-1">
-          <small> Phongtro Sơn xin chào!!!</small>
-          <Button
-            text={"Đăng Ký"}
-            textColor="text-white"
-            bgColor="bg-[#3961fb]"
-            onClick={goLogin}
-          />
-          <Button
-            text={"Đăng Nhập"}
-            textColor="text-white"
-            bgColor="bg-[#3961fb]"
-            onClick={goLogin}
-          />
+          {!isLoggedIn && (
+            <div className="flex items-center gap-2">
+              <small> Phongtro Sơn xin chào!!!</small>
+              <Button
+                text={"Đăng Nhập"}
+                textColor="text-white"
+                bgColor="bg-[#3961fb]"
+                onClick={() => goLogin(false)}
+              />
+              <Button
+                text={"Đăng Ký"}
+                textColor="text-white"
+                bgColor="bg-[#3961fb]"
+                onClick={() => goLogin(true)}
+              />
+            </div>
+          )}
+          {isLoggedIn && (
+            <div className="flex items-center gap-1">
+              <small> Ten !!1</small>
+              <Button
+                text={"Đăng Xuất"}
+                textColor="text-white"
+                bgColor="bg-red-700"
+                onClick={() => dispatch(actions.logout())}
+              />
+            </div>
+          )}
           <Button
             text={"Đăng Tin Mới"}
             textColor="text-white"
