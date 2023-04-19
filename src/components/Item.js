@@ -49,7 +49,7 @@ const Item = ({
               handleStar(+star).map((star, number) => {
                 return <span key={number}>{star}</span>;
               })}
-            {title}
+            {`${title?.slice(0, 70)}...`}
           </div>
           <div className="w-[10%] flex justify-end">
             <BsBookmarkStarFill size={24} color="orange" />
